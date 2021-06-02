@@ -1,0 +1,21 @@
+
+service: PAMAutomationApp
+frameworkVersion: '2'
+
+provider:
+  name: aws
+  runtime: python3.8
+  stage: ${opt:stage}
+  region: ${opt:region, 'eu-west-1'}
+
+functions:
+  PAMLambda:
+    role: PAMLambdaRole
+    name: SSM-PAMAutomation
+    handler: handler.create_role
+    timeout: 5
+
+
+resources:
+  - Resources:
+  - ${file(resources/IAMandSSM.yml)}

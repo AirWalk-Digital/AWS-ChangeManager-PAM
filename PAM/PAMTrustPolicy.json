@@ -1,0 +1,35 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam:::root"
+      },
+      "Action": "sts:AssumeRole",
+      "Condition": {
+        "StringEquals": {
+          "aws:PrincipalOrgID": "o-abcd12efg1"
+        },
+        "DateGreaterThan": {
+          "aws:CurrentTime": "2021-01-01T12:00:00Z"
+        },
+        "DateLessThan": {
+          "aws:CurrentTime": "2021-09-09T12:00:00Z"
+        }
+      }
+    },
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam:::root"
+      },
+      "Action": "sts:SetSourceIdentity",
+      "Condition": {
+        "StringLike": {
+          "sts:SourceIdentity": "PAMRoleAutomation"
+        }
+      }
+    }
+  ]
+}

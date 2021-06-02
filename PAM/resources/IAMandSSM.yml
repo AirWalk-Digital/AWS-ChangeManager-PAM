@@ -1,0 +1,75 @@
+Resources:
+  PAMLambdaRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+                - ssm.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Policies:
+        - PolicyName: PAMLambda
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: 
+                  - 'logs:CreateLogGroup'
+                  - 'logs:CreateLogStream'
+                Resource: !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/SSM-PAMAutomation:*'
+              - Effect: Allow
+                Action:
+                  - 'logs:PutLogEvents'
+                Resource: !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/SSM-PAMAutomation:*:*'
+              - Effect: Allow
+                Action:
+                  - "iam:CreateRole"
+                  - "iam:PutRolePolicy"
+                  - "iam:GetRole"
+                  - "iam:UpdateRole"
+                  - "iam:AttachRolePolicy"
+                  - "iam:UpdateAssumeRolePolicy"
+                Resource: 
+                  - !Sub 'arn:aws:iam::${AWS::AccountId}:role/PAM-Automation'
+              - Effect: Allow
+                Action:
+                  - "lambda:InvokeFunction"
+                Resource: 
+                  - !Sub 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:SSM-PAMAutomation'
+              - Effect: Allow
+                Action:
+                  - "organizations:DescribeOrganization"
+                Resource: '*'
+  PAMAutomation: 
+    Type: AWS::SSM::Document
+    Properties:
+      DocumentType: Automation
+      Name: 'PAMAutomation'
+      Content:
+        description: Apply TrustPolicy to PAM Role 
+        schemaVersion: '0.3'
+        assumeRole: '{{AutomationAssumeRole}}'
+        parameters:
+          AutomationAssumeRole:
+            type: String
+            default: ''
+            description: '(Required) The ARN of the role that allows Automation to perform the actions on your behalf. If no role is specified, Systems Manager Automation uses your IAM permissions to run this runbook.'
+          RequestorRole:
+            type: String
+            description: Enter the ARN of the Admin Role to be assumed
+        mainSteps:
+          - name: InvokeLambda
+            action: 'aws:invokeLambdaFunction'
+            inputs:
+              FunctionName: SSM-PAMAutomation
+              InputPayload:
+                requestor_role: '{{ RequestorRole }}'
+            outputs:
+              - Selector: $.Payload
+                Name: out
+                Type: StringMap
