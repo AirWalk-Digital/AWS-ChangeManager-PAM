@@ -1,0 +1,36 @@
+schemaVersion: "0.3"
+emergencyChange: false
+mainSteps:
+  - name: ApproveAction1
+    action: aws:approve
+    timeoutSeconds: 10000
+    inputs:
+      Message: Please approve this change request
+      EnhancedApprovals:
+        Approvers:
+          - approver: Template_Manager
+            type: IamUser
+            minRequiredApprovals: 1
+executableRunBooks:
+  - name: PAMAutomation
+    version: $DEFAULT
+templateInformation: >
+  #### What is the purpose of this change?
+
+
+  #### What will be required to make this change?
+
+
+  #### Are there any manual steps that need to be run as part of this change?
+
+
+  #### What is the expected end state of the system after this change?
+
+
+  #### What assumptions, if any, are being made about the state of the system at the time of this change?
+
+
+  #### What could happen if everything goes wrong this change and how is the risk mitigated?
+
+
+  #### What is your rollback plan?
