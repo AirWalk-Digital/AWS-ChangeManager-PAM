@@ -1,7 +1,7 @@
 # PAM in AWS using AWS Change Manager 
 
 
-This repo is the companion to `Just enough PAM`.
+This repo is the companion to [Just enough PAM](https://medium.com/airwalk/just-enough-pam-cc85ffd1f435).
 
 It creates
 * A Lambda that creates and modifies an IAM Role that serves as a privileged role
